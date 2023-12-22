@@ -1,0 +1,19 @@
+[project]
+name = "satori-runner"
+version = "0.1.0"
+description = "Satori runner"
+authors = [
+    {name = "Satori CI", email = "info@satori.ci"},
+]
+dependencies = []
+requires-python = ">=3.9"
+readme = "README.md"
+license = {text = "MIT"}
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
+
+
+[tool.pdm]
+package-type = "library"
