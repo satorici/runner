@@ -22,7 +22,9 @@ class Result:
 
 
 async def arun(
-    args: Union[list[StrBytes], StrBytes], timeout: Union[float, None] = None
+    args: Union[list[StrBytes], StrBytes],
+    timeout: Union[float, None] = None,
+    env: Union[dict[str, StrBytes], None] = None,
 ):
     lbytes = isinstance(args, list) and any(isinstance(a, bytes) for a in args)
 
@@ -32,7 +34,10 @@ async def arun(
     try:
         if isinstance(args, list):
             p = await subprocess.create_subprocess_exec(
-                *args, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+                *args,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                env=os.environ | env if env else None,
             )
         else:
             p = await subprocess.create_subprocess_shell(
@@ -40,6 +45,7 @@ async def arun(
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 start_new_session=True,
+                env=os.environ | env if env else None,
             )
     except Exception as e:
         return Result(os_error=str(e))
@@ -63,5 +69,9 @@ async def arun(
         return Result(p.returncode, stdout, stderr, time, killed=True)
 
 
-def run(args: Union[list[StrBytes], StrBytes], timeout: Union[int, None] = None):
-    return asyncio.run(arun(args, timeout))
+def run(
+    args: Union[list[StrBytes], StrBytes],
+    timeout: Union[int, None] = None,
+    env: Union[dict[str, StrBytes], None] = None,
+):
+    return asyncio.run(arun(args, timeout, env))
